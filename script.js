@@ -51,6 +51,9 @@
 // console.log(count);
 
 // Bài khác
+let inputName = document.querySelector('.input-name');
+let addBtn = document.querySelector('.add');
+let updateIndex = -1;
 let productnNames = ['Iphone 11'];
 function renderProductNames(products) {
   //Hàm in ra
@@ -63,20 +66,56 @@ function renderProductNames(products) {
     <p>${item}</p>
     <p>2000$</p>
     <img src="./" alt="">
-    <button>buy</button>
+    <button data-index="${index}" class="editBtn">Edit</button>
+    <button data-index="${index}" class="deleteBtn">Detele</button>
     <p>-------------------</p>
 </div>`;
   }
   productElement.innerHTML = productHtml;
+
+  initEditBtn();
+  initDeleteBtn();
 }
 renderProductNames(productnNames); //Gọi lại Hàm in ra
 
-let inputName = document.querySelector('.input-name');
-let addBtn = document.querySelector('.add');
+function initEditBtn() {
+  let editBtn = document.querySelectorAll('.editBtn');
+  editBtn.forEach(function (item) {
+    item.addEventListener('click', function () {
+      let editIndex = item.getAttribute('data-index'); //Lấy ra giá trị của editIndex
+      let editName = productnNames[editIndex]; //Lấy ra giá trị của Mảng tại vị trí của editIndex
+      updateIndex = editIndex;
+      inputName.value = editName; //Gán giá trị cho ô input = với giá trị của editName khi bấm vào nút edit
+      addBtn.innerHTML = 'Update'; //Khi bấm nút edit thì tự chuyển thành nút Update
+    });
+  });
+}
+
+function initDeleteBtn() {
+  let deleteBtn = document.querySelectorAll('.deleteBtn');
+  deleteBtn.forEach(function (item) {
+    item.addEventListener('click', function () {
+      let deleteIndex = item.getAttribute('data-index'); //Lấy ra giá trị của deleteIndex
+      let status = confirm('Bạn có muốn xóa không');
+      console.log(status);
+      if (status) {
+        productnNames.splice(deleteIndex, 1); //Hàm Xóa: xóa ở vị trí deleteIndex và xóa 1 phần tử
+        renderProductNames(productnNames);
+      }
+    });
+  });
+}
 
 addBtn.addEventListener('click', function () {
   let inputNameValue = inputName.value;
-  productnNames.push(inputNameValue);
+
+  if (updateIndex >= 0) {
+    productnNames[updateIndex] = inputNameValue;
+    updateIndex = -1; //Để có thể add mới được
+    addBtn.innerHTML = 'Add'; //Khi bấm nút Update thì tự chuyển thành nút Add
+  } else {
+    productnNames.push(inputNameValue);
+  }
   renderProductNames(productnNames); //Gọi lại Hàm in ra
   inputName.value = '';
 });
